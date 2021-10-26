@@ -562,6 +562,10 @@ scheduler(void)
       insert_into_prio_queue(p);
       release(&prio_lock);
       swtch(&c->scheduler, &p->context);
+       c->proc = 0;
+
+      //found = 1;
+      c->intena = 0;
       release(&p->lock);
     }
     else {
