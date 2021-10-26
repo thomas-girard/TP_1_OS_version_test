@@ -511,17 +511,19 @@ wait(uint64 addr)
 
 struct
 proc* pick_highest_priority_runnable_proc() {
+  acquire(&prio_lock);
   for (int i = 0; i<NPRIO; i++) {
     struct list_proc* p_liste_actuelle = prio[i];
     while (p_liste_actuelle) {
-      if (prio[i]->p->state == RUNNABLE) {
-        acquire(&prio_lock);
-        acquire(&prio[i]->p->lock);
-        return prio[i]->p;
+      if (p_liste_actuelle->p->state == RUNNABLE) {
+        acquire(&p_liste_actuelle->p->lock);
+        return p_liste_actuelle->p;
       }
-      p_liste_actuelle = prio[i]->next;
+      p_liste_actuelle = p_liste_actuelle->next;
     }
+
   }
+  release(&prio_lock);
   return 0;
 
 }
