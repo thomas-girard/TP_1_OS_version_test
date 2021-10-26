@@ -273,7 +273,6 @@ userinit(void)
 
   // Activité 1.2
   acquire(&prio_lock);
-  acquire(&p->lock);
   insert_into_prio_queue(p);
 
   release(&p->lock);
@@ -344,6 +343,11 @@ fork(void)
 
   np->state = RUNNABLE;
 
+  // activité 1.2
+  acquire(&prio_lock);
+  insert_into_prio_queue(np);
+  release(&prio_lock);
+
   release(&np->lock);
 
   return pid;
@@ -408,6 +412,16 @@ exit(int status)
   acquire(&initproc->lock);
   wakeup1(initproc);
   release(&initproc->lock);
+
+
+  // activité 1.2
+  acquire(&prio_lock);
+  acquire(&p->lock);
+  remove_from_prio_queue(p);
+  release(&p->lock);
+  release(&prio_lock);
+  //fin activité 1.2
+
 
   // grab a copy of p->parent, to ensure that we unlock the same
   // parent we locked. in case our parent gives us away to init while
