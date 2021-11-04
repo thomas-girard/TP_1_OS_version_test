@@ -12,3 +12,5 @@ main(int argc, char **argv)
   nice(atoi(argv[1]), atoi(argv[2]));
   exit(0);
 }
+
+
