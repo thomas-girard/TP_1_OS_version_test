@@ -19,4 +19,14 @@ Avec la version du scheduler non modifié par la question 2.2, tous les tests pa
 
 ## Question 2.2
 
+## Question 4.1
+On obtient sur le terminal "Fils, tu m'attendras" répétés plusieurs fois et la réponse unique du fils "Oui père".
+
+Lorsque les mutex seront correctement implémentés, on obtiendra la réponse du fils lorsque le père relachera le mutex.
+
+## Question 4.2
+On obtient des réponses différentes de 100. Lorsque les mutex seront correctement implémentés, on devrait obtenir uniquement le résultat 100.
+
+
+
 
