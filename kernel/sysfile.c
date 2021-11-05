@@ -354,7 +354,7 @@ sys_create_mutex(void)
 {
   int fd;
   struct file *f;
-
+  struct sleeplock le_futex;
 
   if((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0){
     if(f)
@@ -363,7 +363,9 @@ sys_create_mutex(void)
   }
 
   f->type = FD_MUTEX;
-  f->mutex.locked = 1;
+
+  le_futex.locked = 0;
+  f->mutex = le_futex;
 
 
   return fd;

@@ -12688,7 +12688,7 @@ sys_create_mutex(void)
     800062a4:	1000                	addi	s0,sp,32
   int fd;
   struct file *f;
-
+  struct sleeplock le_futex;
 
   if((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0){
     800062a6:	fffff097          	auipc	ra,0xfffff
@@ -12706,9 +12706,10 @@ sys_create_mutex(void)
   f->type = FD_MUTEX;
     800062be:	4791                	li	a5,4
     800062c0:	c09c                	sw	a5,0(s1)
-  f->mutex.locked = 1;
-    800062c2:	4785                	li	a5,1
-    800062c4:	d49c                	sw	a5,40(s1)
+
+  le_futex.locked = 0;
+  f->mutex = le_futex;
+    800062c2:	0204a423          	sw	zero,40(s1)
 
 
   return fd;
