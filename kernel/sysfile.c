@@ -352,65 +352,19 @@ sys_open(void)
 uint64
 sys_create_mutex(void)
 {
-  char path[MAXPATH];
-  int fd, omode;
+  int fd;
   struct file *f;
-  struct inode *ip;
-  int n;
 
-  if((n = argstr(0, path, MAXPATH)) < 0 || argint(1, &omode) < 0)
-    return -1;
-
-  begin_op(ROOTDEV);
-
-  if(omode & O_CREATE){
-    ip = create(path, T_FILE, 0, 0);
-    if(ip == 0){
-      end_op(ROOTDEV);
-      return -1;
-    }
-  } else {
-    if((ip = namei(path)) == 0){
-      end_op(ROOTDEV);
-      return -1;
-    }
-    ilock(ip);
-    if(ip->type == T_DIR && omode != O_RDONLY){
-      iunlockput(ip);
-      end_op(ROOTDEV);
-      return -1;
-    }
-  }
-
-  if(ip->type == T_DEVICE && (ip->major < 0 || ip->major >= NDEV)){
-    iunlockput(ip);
-    end_op(ROOTDEV);
-    return -1;
-  }
 
   if((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0){
     if(f)
       fileclose(f);
-    iunlockput(ip);
-    end_op(ROOTDEV);
     return -1;
   }
 
-  if(ip->type == T_DEVICE){
-    f->type = FD_DEVICE;
-    f->major = ip->major;
-    f->minor = ip->minor;
-  } else {
-    f->type = FD_MUTEX;
-  }
-  f->ip = ip;
-  f->off = 0;
-  f->readable = !(omode & O_WRONLY);
-  f->writable = (omode & O_WRONLY) || (omode & O_RDWR);
-  f->mutex.locked = 0;
+  f->type = FD_MUTEX;
+  f->mutex.locked = 1;
 
-  iunlock(ip);
-  end_op(ROOTDEV);
 
   return fd;
 }
